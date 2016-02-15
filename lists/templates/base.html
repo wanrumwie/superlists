@@ -9,18 +9,29 @@
     {% load staticfiles %}
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/base.css' %}" rel="stylesheet">
+    <link rel="icon"
+          type="image/x-icon"
+          href="{% static 'favicon/favicon.ico' %}"/>
 </head>
 <body>
 <div class="container">
 
+    <nav class="navbar navbar-default" role="navigation">
+        <a class="navbar-brand" href="/">Superlists</a>
+        {% if user.email %}
+            <a class="btn navbar-btn navbar-right" id="logout" href="#">{{ user.email}} Sign out</a>
+        {% else %}
+            <a class="btn navbar-btn navbar-right" id="login" href="#">Sign in</a>
+        {% endif %}
+    </nav>
+
     <div class="navbar">
+        <p>User: {{user}}</p>
         {% if user.email %}
             <p>Logged in as {{ user.email}}</p>
-            <p><a id="logout" href="{% url 'TDD-accounts:logout' %}">Sign out</a></p>
-        {% else %}
-            <a href="#" id="login">Sign in</a>
+            <p><a href="{% url 'TDD-accounts:logout' %}">Log out</a></p>
         {% endif %}
-        <p>User: {{user}}</p>
+        <p><a href="{% url 'js_tests:js_tests' %}">js_tests</a></p>
     </div>
 
     <div class="row">
@@ -50,7 +61,7 @@
 
 </div>
 <script src="http://code.jquery.com/jquery.min.js"></script>
-<script src="/static/list.js"></script>
+<script src="{% static 'js/list.js' %}"></script>
 <script src="https://login.persona.org/include.js"></script>
 <script>
 $(document).ready(function() {

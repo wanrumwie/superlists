@@ -8,7 +8,7 @@ class LayoutAndStylingTestLists(ListsFunctionalTest):
     def test_layout_and_styling(self):
         # Edith goes to the home page
         self.browser.get('%s%s' % (self.server_url, '/'))
-        self.browser.set_window_size(1024, 600)
+        self.browser.set_window_size(1024, 800)
 
         # She notices the input box is nicely centered
         inputbox = self.get_item_input_box()
