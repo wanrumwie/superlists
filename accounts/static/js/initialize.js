@@ -1,6 +1,7 @@
-$( document ).ready( function() {
+// Global:  $ (?), document (?), window (?)
+// navigator object should be load from "https://login.persona.org/include.js" by <script> in template
 
-    console.log('js: before Superlists.Accounts.initialize( navigator )');
+$( document ).ready( function() {
 
     var initialize = function ( navigator, user, token, urls ) {
         $( '#login' ).on( 'click', function () {
@@ -11,18 +12,16 @@ $( document ).ready( function() {
         });
         navigator.id.watch({
             loggedInUser: user,
-            onlogin: function ( assertion ) {
-                $.post(
-                    urls.login,
-                    { assertion: assertion, csrfmiddlewaretoken: token }
-                );
+            onlogin: function( assertion ) {
+                var $post = $.post( urls.login, { assertion: assertion, csrfmiddlewaretoken: token });
+                $post.done( function() { window.location.reload(); });
+                $post.fail( function() { navigator.id.logout(); });
             },
-            onlogout:       function () {}
+            onlogout: function() {
+                var $post = $.post( urls.logout, { csrfmiddlewaretoken: token });
+                $post.always( function() { window.location.reload(); });
+            }
         });
-
-
-
-        console.log( 'initialize:', navigator );
     };
 
     window.Superlists = {
@@ -30,7 +29,5 @@ $( document ).ready( function() {
             initialize: initialize
         }
     };
-
-//    Superlists.Accounts.initialize( navigator );
 
 });

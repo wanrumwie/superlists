@@ -13,7 +13,6 @@ test( "initialize binds sign in button to navigator.id.request", function () {
     equal( requestWasCalled, false, 'check request should be not called before click' );
     $( '#login' ).trigger( 'click' );
     equal( requestWasCalled, true, 'check request should be called after click' );
-
 });
 
 var user, token, urls, mockNavigator, requests, xhr; //1
@@ -36,7 +35,6 @@ module( "navigator.id.watch tests", {
         xhr.restore(); //7
     }
 });
-
 
 test( "initialize calls navigator.id.watch", function () {
     Superlists.Accounts.initialize( mockNavigator, user, token, urls );
@@ -73,5 +71,19 @@ test( "onlogout is just a placeholder", function () {
     Superlists.Accounts.initialize( mockNavigator, user, token, urls );
     var onlogoutCallback = mockNavigator.id.watch.firstCall.args[0].onlogout;
     equal( typeof onlogoutCallback, "function", "onlogout should be a function" );
+});
+
+test( "onlogin post failure should do navigator.id.logout ", function () {
+    mockNavigator.id.logout = sinon.mock(); //1
+    Superlists.Accounts.initialize( mockNavigator, user, token, urls );
+    var onloginCallback = mockNavigator.id.watch.firstCall.args[0].onlogin;
+    var server = sinon.fakeServer.create(); //2
+    server.respondWith( [403, {}, "permission denied"] ); //3
+
+    onloginCallback();
+    equal( mockNavigator.id.logout.called, false, 'should not logout yet' );
+
+    server.respond(); //4
+    equal( mockNavigator.id.logout.called, true, 'should call logout' );
 });
 
