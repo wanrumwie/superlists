@@ -66,5 +66,12 @@
 <script src="{% static 'js/list.js' %}"></script>
 <script src="https://login.persona.org/include.js"></script>
 <script src="{% static 'js/accounts.js' %}"></script>
+<script src="{% static 'js/initialize.js' %}"></script>
+<script>
+        var urls = {
+            login:  "{% url 'TDD-accounts:login' %}",
+            logout: "{% url 'TDD-accounts:logout' %}",
+        };
+</script>
 </body>
 </html>

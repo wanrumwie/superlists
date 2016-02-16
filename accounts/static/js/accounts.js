@@ -1,5 +1,7 @@
 $( document ).ready( function() {
 
+    console.log('js: urls=', urls);
+
     var loginLink = document.getElementById( 'login' );
     if ( loginLink ) {
       loginLink.onclick = function() { navigator.id.request(); };
@@ -16,17 +18,21 @@ $( document ).ready( function() {
     console.log('js: csrf_token=', csrf_token);
 
     navigator.id.watch({
-      loggedInUser: currentUser,
-      onlogin: function( assertion ) {
-          $.post( '/accounts/login', {
-            assertion: assertion, 
-            csrfmiddlewaretoken: csrf_token 
+        loggedInUser: currentUser,
+        onlogin: function( assertion ) {
+            $.post( '/accounts/login', {
+                assertion: assertion, 
+                csrfmiddlewaretoken: csrf_token 
             }).done( function() { window.location.reload(); }).fail( function() { navigator.id.logout(); });
-          },
-      onlogout: function() {
-          $.post( '/accounts/logout', { csrfmiddlewaretoken: csrf_token }).always( function() { window.location.reload(); });
-      }
+        },
+        onlogout: function() {
+            $.post( '/accounts/logout', { 
+                csrfmiddlewaretoken: csrf_token 
+            }).always( function() { window.location.reload(); });
+        }
     });
+
+    Superlists.Accounts.initialize( navigator );
 
 });
 
