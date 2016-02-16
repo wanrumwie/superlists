@@ -1,38 +1,33 @@
+// Global:  $ (?), document (?), window (?)
+// navigator object should be load from "https://login.persona.org/include.js" by <script> in template
+
 $( document ).ready( function() {
 
-    console.log('js: urls=', urls);
+    var initialize = function ( navigator, user, token, urls ) {
+        $( '#login' ).on( 'click', function () {
+            navigator.id.request();
+        });
+        $( '#logout' ).on( 'click', function () {
+            navigator.id.logout();
+        });
+        navigator.id.watch({
+            loggedInUser: user,
+            onlogin: function( assertion ) {
+                var $post = $.post( urls.login, { assertion: assertion, csrfmiddlewaretoken: token });
+                $post.done( function() { window.location.reload(); });
+                $post.fail( function() { navigator.id.logout(); });
+            },
+            onlogout: function() {
+                var $post = $.post( urls.logout, { csrfmiddlewaretoken: token });
+                $post.always( function() { window.location.reload(); });
+            }
+        });
+    };
 
-    var loginLink = document.getElementById( 'login' );
-    if ( loginLink ) {
-      loginLink.onclick = function() { navigator.id.request(); };
-    }
-
-    var logoutLink = document.getElementById( 'logout' );
-    if ( logoutLink ) {
-      logoutLink.onclick = function() { navigator.id.logout(); };
-    }
-
-    var currentUser = $( "#user_email" ).val() || null;
-    var csrf_token = $( "#csrfmiddlewaretoken" ).val();
-    console.log('js: currentUser=', currentUser);
-    console.log('js: csrf_token=', csrf_token);
-
-    navigator.id.watch({
-        loggedInUser: currentUser,
-        onlogin: function( assertion ) {
-            $.post( '/accounts/login', {
-                assertion: assertion, 
-                csrfmiddlewaretoken: csrf_token 
-            }).done( function() { window.location.reload(); }).fail( function() { navigator.id.logout(); });
-        },
-        onlogout: function() {
-            $.post( '/accounts/logout', { 
-                csrfmiddlewaretoken: csrf_token 
-            }).always( function() { window.location.reload(); });
+    window.Superlists = {
+        Accounts: {
+            initialize: initialize
         }
-    });
-
-    Superlists.Accounts.initialize( navigator );
+    };
 
 });
-
