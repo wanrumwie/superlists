@@ -11,11 +11,12 @@
 {% endblock qunit-fixture %}
 
 {% block script_library %}
-    <script src="https://login.persona.org/include.js"></script>
+    <!--<script src="https://login.persona.org/include.js"></script>-->
 {% endblock script_library %}
 
 {% block tested_script %}
-    <script src="{% static 'js/accounts.js' %}"           ></script>
+    <!--<script src="{% static 'js/accounts.js' %}"           ></script>-->
+    <script src="{% static 'js/initialize.js' %}"           ></script>
 {% endblock tested_script %}
 
 {% block test_script %}
