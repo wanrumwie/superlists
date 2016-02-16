@@ -6,9 +6,21 @@ $( document ).ready( function() {
         $( '#login' ).on( 'click', function () {
             navigator.id.request();
         });
-        navigator.id.watch({
-            loggedInUser: user
+        $( '#logout' ).on( 'click', function () {
+            navigator.id.logout();
         });
+        navigator.id.watch({
+            loggedInUser: user,
+            onlogin: function ( assertion ) {
+                $.post(
+                    urls.login,
+                    { assertion: assertion, csrfmiddlewaretoken: token }
+                );
+            },
+            onlogout:       function () {}
+        });
+
+
 
         console.log( 'initialize:', navigator );
     };
