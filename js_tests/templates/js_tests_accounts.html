@@ -1,0 +1,24 @@
+{% extends "base_js_tests.html" %}
+
+{% load staticfiles %}
+
+{% block title %}
+    Javascript tests - To-Do - Accounts app
+{% endblock title %}
+
+{% block qunit-fixture %}
+      <a id="login">Sign in</a>
+{% endblock qunit-fixture %}
+
+{% block script_library %}
+    <script src="https://login.persona.org/include.js"></script>
+{% endblock script_library %}
+
+{% block tested_script %}
+    <script src="{% static 'js/accounts.js' %}"           ></script>
+{% endblock tested_script %}
+
+{% block test_script %}
+    <script src="{% static 'accounts/test_accounts.js' %}"   ></script>
+{% endblock test_script %}
+
