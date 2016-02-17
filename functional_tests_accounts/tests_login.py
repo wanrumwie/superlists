@@ -2,6 +2,8 @@ import time
 from selenium.webdriver.support.wait import WebDriverWait
 from functional_tests_superlists.ft_base import FunctionalTest
 
+TEST_EMAIL = 'edith@mockmyid.com'
+
 
 class LoginTest(FunctionalTest):
 
@@ -17,8 +19,22 @@ class LoginTest(FunctionalTest):
         self.fail('could not find window')
 
     def wait_for_element_with_id(self, element_id):
-        WebDriverWait(self.browser, timeout=30)\
-            .until(lambda b: b.find_element_by_id(element_id))
+        WebDriverWait(self.browser, timeout=30).until(
+            lambda b: b.find_element_by_id(element_id),
+            'Could not find element with id {}. Page text was:\n{}'.format(
+                element_id, self.browser.find_element_by_tag_name('body').text
+            )
+        )
+
+    def wait_to_be_logged_in(self, email):
+        self.wait_for_element_with_id('logout')
+        navbar = self.browser.find_element_by_css_selector('.navbar')
+        self.assertIn(email, navbar.text)
+
+    def wait_to_be_logged_out(self, email):
+        self.wait_for_element_with_id('login')
+        navbar = self.browser.find_element_by_css_selector('.navbar')
+        self.assertNotIn(email, navbar.text)
 
     def test_login_with_persona(self):
         # Edith goes to the awesome superlists site
@@ -29,17 +45,29 @@ class LoginTest(FunctionalTest):
         # A Persona login box appears
         self.switch_to_new_window('Mozilla Persona')  #1
 
+
         # Edith logs in with her email address
         ## Use mockmyid.com for test email
         self.browser.find_element_by_id('authentication_email')\
-                                .send_keys('edith@mockmyid.com') #2 #3
+                                .send_keys(TEST_EMAIL) #2 #3
         self.browser.find_element_by_tag_name('button').click()
 
         # The Persona window closes
         self.switch_to_new_window('To-Do')
 
         # She can see that she is logged in
-        self.wait_for_element_with_id('logout')  #4
-        navbar = self.browser.find_element_by_css_selector('.navbar')
-        self.assertIn('edith@mockmyid.com', navbar.text)
+        self.wait_to_be_logged_in(email=TEST_EMAIL)
+
+        # Refreshing the page, she sees it's a real session login,
+        # not just a one-off for that page
+        self.browser.refresh()
+        self.wait_to_be_logged_in(email=TEST_EMAIL)
+
+        # Terrified of this new feature, she reflexively clicks "logout"
+        self.browser.find_element_by_id('logout').click()
+        self.wait_to_be_logged_out(email=TEST_EMAIL)
+
+        # The "logged out" status also persists after a refresh
+        self.browser.refresh()
+        self.wait_to_be_logged_out(email=TEST_EMAIL)
 
